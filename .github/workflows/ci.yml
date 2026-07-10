@@ -1,0 +1,48 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: wtbot
+          POSTGRES_USER: wtbot
+          POSTGRES_PASSWORD: wtbot
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U wtbot -d wtbot"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Download modules
+        run: go mod download
+      - name: Build
+        run: go build ./...
+      - name: Vet
+        run: go vet ./...
+      - name: Lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.64.8
+          install-mode: goinstall
+          args: ./...
+      - name: Test
+        run: go test ./... -race -coverprofile=coverage.out
+      - name: Generate swagger docs
+        run: go run github.com/swaggo/swag/cmd/swag@v1.16.6 init -g cmd/server/main.go -o docs --parseInternal --parseDependency --parseDepth 3
+      - name: Verify swagger docs are up to date
+        run: git diff --exit-code -- docs
