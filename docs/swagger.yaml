@@ -1,0 +1,764 @@
+basePath: /api/v1
+definitions:
+  github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.CreatePaymentRequest:
+    properties:
+      amount_cents:
+        minimum: 0
+        type: integer
+      currency:
+        type: string
+      metadata:
+        $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.JSONMap'
+      provider:
+        maxLength: 64
+        type: string
+      provider_payment_id:
+        maxLength: 255
+        type: string
+      subscription_id:
+        type: string
+    required:
+    - amount_cents
+    - currency
+    - provider
+    type: object
+  github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.CreatePlanRequest:
+    properties:
+      currency:
+        type: string
+      description:
+        maxLength: 1024
+        type: string
+      features:
+        $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.JSONMap'
+      interval:
+        allOf:
+        - $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.PlanInterval'
+        enum:
+        - monthly
+        - yearly
+        - one_time
+      is_active:
+        type: boolean
+      name:
+        maxLength: 120
+        minLength: 2
+        type: string
+      price_cents:
+        minimum: 0
+        type: integer
+    required:
+    - currency
+    - interval
+    - name
+    type: object
+  github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.CreateSubscriptionRequest:
+    properties:
+      plan_id:
+        type: string
+    required:
+    - plan_id
+    type: object
+  github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.JSONMap:
+    additionalProperties: {}
+    type: object
+  github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.MessageResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.PaymentListResponse:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+      payments:
+        items:
+          $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.PaymentResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.PaymentResponse:
+    properties:
+      amount_cents:
+        type: integer
+      created_at:
+        type: string
+      currency:
+        type: string
+      id:
+        type: string
+      metadata:
+        $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.JSONMap'
+      owner_id:
+        type: string
+      provider:
+        type: string
+      provider_payment_id:
+        type: string
+      status:
+        $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.PaymentStatus'
+      subscription_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.PaymentStatus:
+    enum:
+    - pending
+    - completed
+    - failed
+    - refunded
+    type: string
+    x-enum-varnames:
+    - PaymentPending
+    - PaymentCompleted
+    - PaymentFailed
+    - PaymentRefunded
+  github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.PlanInterval:
+    enum:
+    - monthly
+    - yearly
+    - one_time
+    type: string
+    x-enum-varnames:
+    - PlanIntervalMonthly
+    - PlanIntervalYearly
+    - PlanIntervalOneTime
+  github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.PlanListResponse:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+      plans:
+        items:
+          $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.PlanResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.PlanResponse:
+    properties:
+      created_at:
+        type: string
+      currency:
+        type: string
+      description:
+        type: string
+      features:
+        $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.JSONMap'
+      id:
+        type: string
+      interval:
+        $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.PlanInterval'
+      is_active:
+        type: boolean
+      name:
+        type: string
+      price_cents:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.SubscriptionListResponse:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+      subscriptions:
+        items:
+          $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.SubscriptionResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.SubscriptionResponse:
+    properties:
+      canceled_at:
+        type: string
+      created_at:
+        type: string
+      current_period_end:
+        type: string
+      current_period_start:
+        type: string
+      id:
+        type: string
+      owner_id:
+        type: string
+      plan_id:
+        type: string
+      status:
+        $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.SubscriptionStatus'
+      updated_at:
+        type: string
+    type: object
+  github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.SubscriptionStatus:
+    enum:
+    - active
+    - canceled
+    - expired
+    - past_due
+    type: string
+    x-enum-varnames:
+    - SubscriptionActive
+    - SubscriptionCanceled
+    - SubscriptionExpired
+    - SubscriptionPastDue
+  github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.UpdatePaymentRequest:
+    properties:
+      metadata:
+        $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.JSONMap'
+      provider_payment_id:
+        maxLength: 255
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.PaymentStatus'
+        enum:
+        - pending
+        - completed
+        - failed
+        - refunded
+    type: object
+  github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.UpdatePaymentStatusRequest:
+    properties:
+      status:
+        allOf:
+        - $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.PaymentStatus'
+        enum:
+        - pending
+        - completed
+        - failed
+        - refunded
+    required:
+    - status
+    type: object
+  github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.UpdatePlanRequest:
+    properties:
+      currency:
+        type: string
+      description:
+        maxLength: 1024
+        type: string
+      features:
+        $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.JSONMap'
+      interval:
+        allOf:
+        - $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.PlanInterval'
+        enum:
+        - monthly
+        - yearly
+        - one_time
+      is_active:
+        type: boolean
+      name:
+        maxLength: 120
+        minLength: 2
+        type: string
+      price_cents:
+        minimum: 0
+        type: integer
+    type: object
+  github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.UpdateSubscriptionRequest:
+    properties:
+      canceled_at:
+        type: string
+      current_period_end:
+        type: string
+      current_period_start:
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.SubscriptionStatus'
+        enum:
+        - active
+        - canceled
+        - expired
+        - past_due
+    type: object
+info:
+  contact: {}
+  description: WT-Bot payments microservice for managing plans, subscriptions, and
+    payments.
+  title: WT-Bot Payments API
+  version: 0.1.0
+paths:
+  /healthz:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Liveness probe
+      tags:
+      - health
+  /payments:
+    get:
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      - description: Subscription ID filter
+        in: query
+        name: subscription_id
+        type: string
+      - description: Status filter
+        in: query
+        name: status
+        type: string
+      - description: Provider filter
+        in: query
+        name: provider
+        type: string
+      - description: Sort field
+        in: query
+        name: sort_by
+        type: string
+      - description: Sort order
+        in: query
+        name: sort_order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.PaymentListResponse'
+      security:
+      - BearerAuth: []
+      summary: List payments
+      tags:
+      - payments
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Create request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.CreatePaymentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.PaymentResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a payment
+      tags:
+      - payments
+  /payments/{id}:
+    delete:
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.MessageResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete a payment
+      tags:
+      - payments
+    get:
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.PaymentResponse'
+      security:
+      - BearerAuth: []
+      summary: Get a payment by ID
+      tags:
+      - payments
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.UpdatePaymentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.PaymentResponse'
+      security:
+      - BearerAuth: []
+      summary: Update a payment
+      tags:
+      - payments
+  /payments/{id}/status:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Status request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.UpdatePaymentStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.MessageResponse'
+      summary: Update payment status from a payment provider
+      tags:
+      - payments-service
+  /plans:
+    get:
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      - description: Search term
+        in: query
+        name: search
+        type: string
+      - description: Active filter
+        in: query
+        name: is_active
+        type: boolean
+      - description: Interval filter
+        in: query
+        name: interval
+        type: string
+      - description: Sort field
+        in: query
+        name: sort_by
+        type: string
+      - description: Sort order
+        in: query
+        name: sort_order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.PlanListResponse'
+      security:
+      - BearerAuth: []
+      summary: List plans
+      tags:
+      - plans
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Create request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.CreatePlanRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.PlanResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a plan
+      tags:
+      - plans
+  /plans/{id}:
+    delete:
+      parameters:
+      - description: Plan ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.MessageResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete a plan
+      tags:
+      - plans
+    get:
+      parameters:
+      - description: Plan ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.PlanResponse'
+      security:
+      - BearerAuth: []
+      summary: Get a plan by ID
+      tags:
+      - plans
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Plan ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.UpdatePlanRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.PlanResponse'
+      security:
+      - BearerAuth: []
+      summary: Update a plan
+      tags:
+      - plans
+  /readyz:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Readiness probe
+      tags:
+      - health
+  /subscriptions:
+    get:
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      - description: Owner ID filter
+        in: query
+        name: owner_id
+        type: string
+      - description: Plan ID filter
+        in: query
+        name: plan_id
+        type: string
+      - description: Status filter
+        in: query
+        name: status
+        type: string
+      - description: Sort field
+        in: query
+        name: sort_by
+        type: string
+      - description: Sort order
+        in: query
+        name: sort_order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.SubscriptionListResponse'
+      security:
+      - BearerAuth: []
+      summary: List subscriptions
+      tags:
+      - subscriptions
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Create request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.CreateSubscriptionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.SubscriptionResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a subscription
+      tags:
+      - subscriptions
+  /subscriptions/{id}:
+    delete:
+      parameters:
+      - description: Subscription ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.MessageResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete a subscription
+      tags:
+      - subscriptions
+    get:
+      parameters:
+      - description: Subscription ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.SubscriptionResponse'
+      security:
+      - BearerAuth: []
+      summary: Get a subscription by ID
+      tags:
+      - subscriptions
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Subscription ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.UpdateSubscriptionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.SubscriptionResponse'
+      security:
+      - BearerAuth: []
+      summary: Update a subscription
+      tags:
+      - subscriptions
+  /subscriptions/{id}/status:
+    get:
+      parameters:
+      - description: Subscription ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.SubscriptionResponse'
+      summary: Get subscription status for service validation
+      tags:
+      - subscriptions-service
+schemes:
+- http
+- https
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
