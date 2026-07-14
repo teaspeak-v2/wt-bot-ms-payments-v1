@@ -189,6 +189,27 @@ func (h *SubscriptionHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, models.MessageResponse{Message: "subscription deleted"})
 }
 
+// Entitlement godoc
+// @Summary Check whether an owner has an active subscription (service only)
+// @Tags subscriptions-service
+// @Produce json
+// @Param owner_id path string true "Owner ID"
+// @Success 200 {object} models.EntitlementResponse
+// @Router /entitlements/{owner_id} [get]
+func (h *SubscriptionHandler) Entitlement(w http.ResponseWriter, r *http.Request) {
+	ownerID, err := uuid.Parse(chi.URLParam(r, "owner_id"))
+	if err != nil {
+		apperror.WriteJSON(w, apperror.InvalidRequest("invalid owner_id", err))
+		return
+	}
+	resp, err := h.svc.GetOwnerEntitlement(r.Context(), ownerID)
+	if err != nil {
+		apperror.WriteJSON(w, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, resp)
+}
+
 // Status godoc
 // @Summary Get subscription status for service validation
 // @Tags subscriptions-service

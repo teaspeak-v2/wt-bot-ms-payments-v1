@@ -59,6 +59,19 @@ definitions:
     required:
     - plan_id
     type: object
+  github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.EntitlementResponse:
+    properties:
+      active:
+        type: boolean
+      features:
+        $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.JSONMap'
+      owner_id:
+        type: string
+      plan_id:
+        type: string
+      subscription:
+        $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.SubscriptionResponse'
+    type: object
   github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.JSONMap:
     additionalProperties: {}
     type: object
@@ -288,6 +301,24 @@ info:
   title: WT-Bot Payments API
   version: 0.1.0
 paths:
+  /entitlements/{owner_id}:
+    get:
+      parameters:
+      - description: Owner ID
+        in: path
+        name: owner_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.EntitlementResponse'
+      summary: Check whether an owner has an active subscription (service only)
+      tags:
+      - subscriptions-service
   /healthz:
     get:
       produces:

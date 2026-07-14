@@ -172,6 +172,17 @@ type SubscriptionResponse struct {
 	UpdatedAt          time.Time        `json:"updated_at"`
 }
 
+// EntitlementResponse describes whether an owner currently has an active
+// subscription. It is returned by the service-to-service entitlement endpoint
+// and is used by other microservices (e.g. teamspeaks) to gate paid actions.
+type EntitlementResponse struct {
+	OwnerID      uuid.UUID             `json:"owner_id"`
+	Active       bool                  `json:"active"`
+	Subscription *SubscriptionResponse `json:"subscription,omitempty"`
+	PlanID       *uuid.UUID            `json:"plan_id,omitempty"`
+	Features     JSONMap               `json:"features,omitempty"`
+}
+
 // SubscriptionListResponse is a paginated list of subscriptions.
 type SubscriptionListResponse struct {
 	Subscriptions []SubscriptionResponse `json:"subscriptions"`

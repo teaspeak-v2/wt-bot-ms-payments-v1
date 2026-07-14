@@ -110,10 +110,41 @@ func (s *PaymentService) UpdatePayment(ctx context.Context, id uuid.UUID, req mo
 	return s.toPaymentResponse(updated), nil
 }
 
-// UpdatePaymentStatus updates payment status from a payment provider.
+// UpdatePaymentStatus updates payment status from a payment provider. When the
+// payment is tied to a subscription, the subscription status is kept in sync:
+// a completed payment activates it, a failed one marks it past_due, and a
+// refund cancels it.
 func (s *PaymentService) UpdatePaymentStatus(ctx context.Context, id uuid.UUID, status models.PaymentStatus) error {
+	payment, err := s.repo.GetPaymentByID(ctx, id)
+	if err != nil {
+		return s.mapRepoErr(err)
+	}
 	if err := s.repo.UpdatePaymentStatus(ctx, id, status); err != nil {
 		return s.mapRepoErr(err)
+	}
+	if payment.SubscriptionID == nil || *payment.SubscriptionID == uuid.Nil {
+		return nil
+	}
+	var subStatus *models.SubscriptionStatus
+	switch status {
+	case models.PaymentCompleted:
+		st := models.SubscriptionActive
+		subStatus = &st
+	case models.PaymentFailed:
+		st := models.SubscriptionPastDue
+		subStatus = &st
+	case models.PaymentRefunded:
+		st := models.SubscriptionCanceled
+		subStatus = &st
+	}
+	if subStatus == nil {
+		return nil
+	}
+	if _, err := s.repo.UpdateSubscription(ctx, *payment.SubscriptionID, models.UpdateSubscriptionRequest{Status: subStatus}); err != nil {
+		return s.mapRepoErr(err)
+	}
+	if s.cache != nil {
+		_ = s.cache.DeleteSubscription(ctx, *payment.SubscriptionID)
 	}
 	return nil
 }

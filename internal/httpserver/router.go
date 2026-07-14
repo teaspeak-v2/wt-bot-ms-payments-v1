@@ -58,6 +58,7 @@ func NewRouter(deps RouterDeps) http.Handler {
 			svc.Use(middleware.ServiceKey(deps.ServiceAPIKey))
 
 			svc.Get("/subscriptions/{id}/status", deps.Subscriptions.Status)
+			svc.Get("/entitlements/{owner_id}", deps.Subscriptions.Entitlement)
 			svc.Post("/payments/{id}/status", deps.Payments.UpdateStatus)
 		})
 
