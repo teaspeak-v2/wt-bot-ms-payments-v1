@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/teaspeak-v2/wt-bot-ms-payments-v1/internal/apperror"
 	"github.com/teaspeak-v2/wt-bot-ms-payments-v1/internal/models"
+	"github.com/teaspeak-v2/wt-bot-ms-payments-v1/internal/repository"
 )
 
 func (s *PaymentService) toSubscriptionResponse(sub *models.Subscription) *models.SubscriptionResponse {
@@ -148,6 +149,31 @@ func (s *PaymentService) DeleteSubscription(ctx context.Context, id uuid.UUID) e
 		_ = s.cache.DeleteSubscription(ctx, id)
 	}
 	return nil
+}
+
+// GetOwnerEntitlement reports whether the given owner currently has an active
+// subscription. It is intended for service-to-service calls (no ownership
+// check) and never fails when the owner simply has no subscription.
+func (s *PaymentService) GetOwnerEntitlement(ctx context.Context, ownerID uuid.UUID) (*models.EntitlementResponse, error) {
+	if ownerID == uuid.Nil {
+		return nil, apperror.InvalidRequest("owner_id is required", nil)
+	}
+	resp := &models.EntitlementResponse{OwnerID: ownerID}
+	sub, err := s.repo.GetActiveSubscriptionByOwner(ctx, ownerID)
+	if err != nil {
+		if repository.IsNotFound(err) {
+			return resp, nil
+		}
+		return nil, s.mapRepoErr(err)
+	}
+	resp.Active = true
+	resp.Subscription = s.toSubscriptionResponse(sub)
+	planID := sub.PlanID
+	resp.PlanID = &planID
+	if plan, err := s.repo.GetPlanByID(ctx, sub.PlanID); err == nil {
+		resp.Features = plan.Features
+	}
+	return resp, nil
 }
 
 // GetSubscriptionStatus returns the status of a subscription for service-to-service validation.

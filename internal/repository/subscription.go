@@ -43,6 +43,19 @@ func (r *Repository) GetSubscriptionByID(ctx context.Context, id uuid.UUID) (*mo
 	return scanSubscription(row)
 }
 
+// GetActiveSubscriptionByOwner returns the owner's current active subscription,
+// if any. A subscription counts as active when its status is "active" and it has
+// not passed its current period end. Returns pgx.ErrNoRows when none exists.
+func (r *Repository) GetActiveSubscriptionByOwner(ctx context.Context, ownerID uuid.UUID) (*models.Subscription, error) {
+	q := fmt.Sprintf(`select %s from subscriptions s
+		where s.owner_id=$1 and s.status=$2
+		and (s.current_period_end is null or s.current_period_end > now())
+		order by s.current_period_end desc nulls first, s.created_at desc
+		limit 1`, subscriptionColumns)
+	row := r.db.QueryRow(ctx, q, ownerID, models.SubscriptionActive)
+	return scanSubscription(row)
+}
+
 func (r *Repository) GetSubscriptionStatusByID(ctx context.Context, id uuid.UUID) (models.SubscriptionStatus, error) {
 	var status string
 	err := r.db.QueryRow(ctx, `select status from subscriptions where id=$1`, id).Scan(&status)

@@ -15,6 +15,34 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/entitlements/{owner_id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subscriptions-service"
+                ],
+                "summary": "Check whether an owner has an active subscription (service only)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Owner ID",
+                        "name": "owner_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.EntitlementResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/healthz": {
             "get": {
                 "produces": [
@@ -845,6 +873,26 @@ const docTemplate = `{
             "properties": {
                 "plan_id": {
                     "type": "string"
+                }
+            }
+        },
+        "github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.EntitlementResponse": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "features": {
+                    "$ref": "#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.JSONMap"
+                },
+                "owner_id": {
+                    "type": "string"
+                },
+                "plan_id": {
+                    "type": "string"
+                },
+                "subscription": {
+                    "$ref": "#/definitions/github_com_teaspeak-v2_wt-bot-ms-payments-v1_internal_models.SubscriptionResponse"
                 }
             }
         },
