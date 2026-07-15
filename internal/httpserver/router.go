@@ -14,12 +14,12 @@ import (
 )
 
 type RouterDeps struct {
-	Plans        *handlers.PlanHandler
-	Subscriptions *handlers.SubscriptionHandler
-	Payments     *handlers.PaymentHandler
-	Health       *handlers.HealthHandler
-	Tokens       *token.Manager
-	ServiceAPIKey string
+	Plans          *handlers.PlanHandler
+	Subscriptions  *handlers.SubscriptionHandler
+	Payments       *handlers.PaymentHandler
+	Health         *handlers.HealthHandler
+	Tokens         *token.Manager
+	ServiceAPIKey  string
 	AllowedOrigins []string
 }
 
@@ -32,10 +32,12 @@ func NewRouter(deps RouterDeps) http.Handler {
 	r.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL("/swagger/doc.json")))
 
 	r.Route("/api/v1", func(api chi.Router) {
+		// Public endpoints — no auth required
+		api.Get("/plans", deps.Plans.List)
+
 		api.Group(func(auth chi.Router) {
 			auth.Use(middleware.Auth(deps.Tokens))
 
-			auth.Get("/plans", deps.Plans.List)
 			auth.Post("/plans", deps.Plans.Create)
 			auth.Get("/plans/{id}", deps.Plans.GetByID)
 			auth.Patch("/plans/{id}", deps.Plans.Update)
